@@ -165,18 +165,17 @@ def details():
     )
 
 
-@app.route("/api/tts", methods=["GET"])
+@app.route("/api/tts", methods=["POST"])
 def tts():
-    text = request.args.get("text")
-    speaker_idx = request.args.get("speaker_id", "")
-    style_wav = request.args.get("style_wav", "")
+    data = request.get_json()
+    text = data['text']
+    speaker_idx = data['speaker_id']
+    style_wav = data['style_wav']
     style_wav = style_wav_uri_to_dict(style_wav)
-    print(" > Model input: {}".format(text))
-    print(" > Speaker Idx: {}".format(speaker_idx))
     wavs = synthesizer.tts(text, speaker_name=speaker_idx, style_wav=style_wav)
     out = io.BytesIO()
     synthesizer.save_wav(wavs, out)
-    return send_file(out, mimetype="audio/wav")
+    return send_file(out, mimetype="audio/mp3")
 
 
 def main():
